@@ -4,14 +4,14 @@
     "name": "conformance-producer",
     "version": "1.0.0",
     "source": "sdk-wrapper",
-    "public_key": "MCowBQYDK2VwAyEAuBVYUz1ps5Q/uSVdQYbaX2iwtzP2S4phTVoYNaT2DfI="
+    "public_key": "MCowBQYDK2VwAyEAPQKSgk9odE8RrN2im45s7zOL8xXNRTOn8s1o5WijZLA="
   },
   "issued_at": "2026-07-21T00:00:00Z",
   "session_id": "01900000-0000-7000-8000-000000000001",
   "entries": [
     {
       "prev_hash": null,
-      "depth": "action",
+      "evidence_type": "action",
       "source": "sdk-wrapper",
       "destination": "api.example.com",
       "method": "POST",
@@ -36,5 +36,5 @@
       "payload_contents": "leaked"
     }
   ],
-  "signature": "Oih/XA64JQoQq3l9Xz2NwpVlcgsVMh4Qq9i5mwKt2vMTSGj0GN0lTII9GLCP6AVyZqXlLyfmHvOIWjSfgxRDAA=="
+  "signature": "ZTa+A4AxrMet1UhE+24255oPFDun+QbhAXzRlop+dS/EHO0O+vZOtb8xpvmdAzkgfyG9oApav2q2y149A/ruDQ=="
 }
