@@ -5,7 +5,7 @@
   "entries": [
     {
       "prev_hash": null,
-      "depth": "action",
+      "evidence_type": "action",
       "source": "sdk-wrapper",
       "destination": "api.example.com",
       "method": "POST",
@@ -29,5 +29,5 @@
       }
     }
   ],
-  "signature": "iRkec+geNAsWAM+WE9daz8r/DUVPz5Wxfw+tZL+sDitnfZbXpqRU8YBSZQBQ/OGPR+ubJFMvaW040XcelWorCg=="
+  "signature": "JnDWo3J6eTeuLRtrFfIu35j6PytWKnd+lvL3jnVUJsASc1JVNmE3KopAao2fsKay8vYwd44dZguEe1gLVFwTBA=="
 }
