@@ -1,0 +1,14 @@
+{
+  "$comment": "Single source of truth for IP-leak guardrails. Consumed by scripts/check-bundle-ip-leaks.mjs (webapp), scripts/check-npm-tarball.mjs (npm prepublish), and the public-repo GitHub Action template at .lovable/ci-templates/ip-leak-check.yml. See mem://strategy/spec-publication-boundary.md.",
+  "banned": [
+    { "pattern": "\\bRule [A-Z][0-9]\\b", "flags": "g", "note": "internal invariant identifier" },
+    { "pattern": "\\baccess-model v[0-9]+\\b", "flags": "gi", "note": "internal spec version label" },
+    { "pattern": "\\bWave [0-9]+(?:\\.[0-9]+)+\\b", "flags": "g", "note": "internal cadence label" },
+    { "pattern": "\\bWave [A-Z]\\b(?![-\\w])", "flags": "g", "note": "internal cadence label" },
+    { "pattern": "\\bTrack [0-9]+\\.[0-9]+\\b", "flags": "g", "note": "internal cadence label" },
+    { "pattern": "\\bStage [A-Z][0-9]+(?:\\.[a-z])?\\b", "flags": "g", "note": "internal cadence label" },
+    { "pattern": "SPEC §[0-9]+", "flags": "g", "note": "internal spec section citation" },
+    { "pattern": "DRAFT-[0-9]+", "flags": "g", "note": "internal draft label" }
+  ],
+  "allowlist_note": "AARM Core R1-R9 references are a public standard (aarm.dev). The 'Rule [A-Z][0-9]' pattern intentionally does not match 'R1'..'R9' alone."
+}
