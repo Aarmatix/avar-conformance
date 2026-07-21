@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Generates the canonical RFC-0008 test vectors used by the AVAR
-// conformance suite. Produces one signed "valid" vector plus one
-// rejection vector per RFC-0008/0009 error code.
+// conformance suite. Produces signed "valid" vectors plus one rejection
+// vector per RFC-0008/0009 error code, plus interop vectors covering the
+// amended §3 rules (legacy `depth`, legacy `intent`, unknown types,
+// unknown extension attributes).
 //
 // Output: vectors/rfc-0008/{name}.json + index.json
 //
@@ -12,13 +14,46 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateKeyPairSync, sign as edSign } from "node:crypto";
-import { canonicalize } from "../reference/dist/index.js";
+// Minimal inline RFC-8785 JCS canonicalizer so the generator has no
+// runtime dependency on the reference verifier's build output. Matches
+// the algorithm in Aarmatix/avar src/canonicalize.ts (both derived from
+// the public RFC-8785 text).
+function canonicalize(value) {
+  if (value === null) return "null";
+  if (typeof value === "boolean") return value ? "true" : "false";
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new RangeError("non-finite number");
+    return value === 0 ? "0" : String(value);
+  }
+  if (typeof value === "string") return canonString(value);
+  if (Array.isArray(value)) return "[" + value.map(canonicalize).join(",") + "]";
+  if (typeof value === "object") {
+    const keys = Object.keys(value).filter((k) => value[k] !== undefined).sort();
+    return "{" + keys.map((k) => canonString(k) + ":" + canonicalize(value[k])).join(",") + "}";
+  }
+  throw new TypeError(`unsupported: ${typeof value}`);
+}
+function canonString(s) {
+  let out = '"';
+  for (let i = 0; i < s.length; i++) {
+    const c = s.charCodeAt(i);
+    if (c === 0x22) out += '\\"';
+    else if (c === 0x5c) out += "\\\\";
+    else if (c === 0x08) out += "\\b";
+    else if (c === 0x09) out += "\\t";
+    else if (c === 0x0a) out += "\\n";
+    else if (c === 0x0c) out += "\\f";
+    else if (c === 0x0d) out += "\\r";
+    else if (c < 0x20) out += "\\u" + c.toString(16).padStart(4, "0");
+    else out += s[i];
+  }
+  return out + '"';
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, "..", "vectors", "rfc-0008");
 mkdirSync(OUT, { recursive: true });
 
-// Deterministic timestamp so vectors are stable across regenerations.
 const FIXED_ISSUED_AT = "2026-07-21T00:00:00Z";
 
 const { publicKey, privateKey } = generateKeyPairSync("ed25519");
@@ -38,7 +73,7 @@ function base() {
     session_id: "01900000-0000-7000-8000-000000000001",
     entries: [{
       prev_hash: null,
-      depth: "action",
+      evidence_type: "action",
       source: "sdk-wrapper",
       destination: "api.example.com",
       method: "POST",
@@ -57,59 +92,89 @@ function base() {
 }
 
 const vectors = [];
-
 function emit(name, receipt, expected) {
-  const path = join(OUT, `${name}.json`);
-  writeFileSync(path, JSON.stringify(receipt, null, 2) + "\n");
+  writeFileSync(join(OUT, `${name}.json`), JSON.stringify(receipt, null, 2) + "\n");
   vectors.push({ name, file: `vectors/rfc-0008/${name}.json`, expected });
 }
 
-// 1. Valid baseline
-emit("valid-action-depth", sign(base()), { valid: true, code: null });
+// --- Valid vectors: one per standardized evidence_type -----------------
 
-// 2. Signature tampering → E-SIG-INVALID
+emit("valid-action-type", sign(base()), { valid: true, code: null });
+
+{
+  const r = base();
+  r.entries[0].evidence_type = "protocol";
+  // Drop claims beyond protocol allowance.
+  r.entries[0].arguments = undefined; delete r.entries[0].arguments;
+  r.entries[0].actor_identity = undefined; delete r.entries[0].actor_identity;
+  r.entries[0].claims.arguments = false;
+  r.entries[0].claims.actor_identity = false;
+  emit("valid-protocol-type", sign(r), { valid: true, code: null });
+}
+
+{
+  const r = base();
+  r.entries[0].evidence_type = "transport";
+  // Only `destination` and `session_binding` allowed at transport.
+  delete r.entries[0].method;
+  delete r.entries[0].path_or_call;
+  delete r.entries[0].arguments;
+  delete r.entries[0].response_status;
+  delete r.entries[0].actor_identity;
+  r.entries[0].claims = {
+    destination: true, method: false, path_or_call: false,
+    arguments: false, payload_contents: false, response_status: false,
+    response_contents: false, actor_identity: false, session_binding: true,
+  };
+  emit("valid-transport-type", sign(r), { valid: true, code: null });
+}
+
+// --- Rejection vectors --------------------------------------------------
+
+// Signature tampering → E-SIG-INVALID
 {
   const r = sign(base());
   r.entries[0].destination = "tampered.example.com";
   emit("invalid-signature", r, { valid: false, code: "E-SIG-INVALID" });
 }
 
-// 3. Missing producer → E-PRODUCER-MISSING
+// Missing producer → E-PRODUCER-MISSING
 {
   const r = base();
   delete r.producer;
   emit("missing-producer", sign(r), { valid: false, code: "E-PRODUCER-MISSING" });
 }
 
-// 4. Bad depth → E-DEPTH-INVALID
+// Missing evidence_type (and no legacy depth) → E-EVIDENCE-TYPE-INVALID
 {
   const r = base();
-  r.entries[0].depth = "cosmic";
-  emit("invalid-depth", sign(r), { valid: false, code: "E-DEPTH-INVALID" });
+  delete r.entries[0].evidence_type;
+  emit("missing-evidence-type", sign(r), { valid: false, code: "E-EVIDENCE-TYPE-INVALID" });
 }
 
-// 5. Missing claims → E-CLAIMS-MISSING
+// Missing claims → E-CLAIMS-MISSING
 {
   const r = base();
   delete r.entries[0].claims;
   emit("missing-claims", sign(r), { valid: false, code: "E-CLAIMS-MISSING" });
 }
 
-// 6. Contradiction: payload_contents populated, claim false → E-CLAIMS-CONTRADICTION
+// Contradiction: payload_contents populated, claim false → E-CLAIMS-CONTRADICTION
 {
   const r = base();
   r.entries[0].payload_contents = "leaked";
   emit("claims-contradiction", sign(r), { valid: false, code: "E-CLAIMS-CONTRADICTION" });
 }
 
-// 7. Coherence: transport depth with arguments claim → E-COHERENCE
+// Coherence: transport type with arguments claim true → E-COHERENCE
 {
   const r = base();
-  r.entries[0].depth = "transport";
-  emit("depth-coherence-violation", sign(r), { valid: false, code: "E-COHERENCE" });
+  r.entries[0].evidence_type = "transport";
+  // `arguments` claim stays true from base — that's the violation.
+  emit("evidence-type-coherence-violation", sign(r), { valid: false, code: "E-COHERENCE" });
 }
 
-// 8. Broken chain
+// Broken chain
 {
   const r = base();
   const second = JSON.parse(JSON.stringify(r.entries[0]));
@@ -118,14 +183,46 @@ emit("valid-action-depth", sign(base()), { valid: true, code: null });
   emit("chain-broken", sign(r), { valid: false, code: "E-CHAIN-BROKEN" });
 }
 
-// 9. Time out of range
+// Time out of range
 {
   const r = base();
   r.issued_at = "1970-01-01T00:00:00Z";
   emit("time-out-of-range", sign(r), { valid: false, code: "E-TIME-OUT-OF-RANGE" });
 }
 
-// 10. Legacy 1.9 receipt accepted with legacy flag
+// --- Interop vectors (RFC-0008 §3 rules) -------------------------------
+
+// Legacy `depth` field accepted with deprecation warning (still valid=true).
+{
+  const r = base();
+  delete r.entries[0].evidence_type;
+  r.entries[0].depth = "action";
+  emit("legacy-depth-field-accepted", sign(r), { valid: true, code: null });
+}
+
+// Legacy `depth: "intent"` accepted with warning (intent is out of scope).
+{
+  const r = base();
+  delete r.entries[0].evidence_type;
+  r.entries[0].depth = "intent";
+  emit("legacy-intent-accepted", sign(r), { valid: true, code: null });
+}
+
+// Unknown evidence_type accepted with warning; coherence check skipped.
+{
+  const r = base();
+  r.entries[0].evidence_type = "cosmic";
+  emit("unknown-evidence-type-accepted", sign(r), { valid: true, code: null });
+}
+
+// Unknown extension attribute on entry → still valid.
+{
+  const r = base();
+  r.entries[0].vendor_extension_x = { foo: "bar", nested: [1, 2, 3] };
+  emit("unknown-extension-attr-accepted", sign(r), { valid: true, code: null });
+}
+
+// Pre-1.10 legacy receipt still accepted with legacy flag.
 {
   const r = {
     spec_version: "1.9",
