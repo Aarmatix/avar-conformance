@@ -1,0 +1,35 @@
+{
+  "spec_version": "1.10",
+  "producer": {
+    "name": "conformance-producer",
+    "version": "1.0.0",
+    "source": "sdk-wrapper",
+    "public_key": "MCowBQYDK2VwAyEAPQKSgk9odE8RrN2im45s7zOL8xXNRTOn8s1o5WijZLA="
+  },
+  "issued_at": "2026-07-21T00:00:00Z",
+  "session_id": "01900000-0000-7000-8000-000000000001",
+  "entries": [
+    {
+      "prev_hash": null,
+      "evidence_type": "protocol",
+      "source": "sdk-wrapper",
+      "destination": "api.example.com",
+      "method": "POST",
+      "path_or_call": "/v1/chat",
+      "response_status": 200,
+      "session_binding": "sess-1",
+      "claims": {
+        "destination": true,
+        "method": true,
+        "path_or_call": true,
+        "arguments": false,
+        "payload_contents": false,
+        "response_status": true,
+        "response_contents": false,
+        "actor_identity": false,
+        "session_binding": true
+      }
+    }
+  ],
+  "signature": "SvmcA3Rxqk93dMZUzNVWz2o8HuefXzoPkfttI6aSBEb8/y2rQrJTuy5Qe9of0Qt+1Yxqz8xezyYXTz/xEv3uAA=="
+}
