@@ -1,0 +1,33 @@
+{
+  "spec_version": "1.10",
+  "issued_at": "2026-07-21T00:00:00Z",
+  "session_id": "01900000-0000-7000-8000-000000000001",
+  "entries": [
+    {
+      "prev_hash": null,
+      "depth": "action",
+      "source": "sdk-wrapper",
+      "destination": "api.example.com",
+      "method": "POST",
+      "path_or_call": "/v1/chat",
+      "arguments": {
+        "prompt": "hello"
+      },
+      "response_status": 200,
+      "actor_identity": "user-1",
+      "session_binding": "sess-1",
+      "claims": {
+        "destination": true,
+        "method": true,
+        "path_or_call": true,
+        "arguments": true,
+        "payload_contents": false,
+        "response_status": true,
+        "response_contents": false,
+        "actor_identity": true,
+        "session_binding": true
+      }
+    }
+  ],
+  "signature": "iRkec+geNAsWAM+WE9daz8r/DUVPz5Wxfw+tZL+sDitnfZbXpqRU8YBSZQBQ/OGPR+ubJFMvaW040XcelWorCg=="
+}

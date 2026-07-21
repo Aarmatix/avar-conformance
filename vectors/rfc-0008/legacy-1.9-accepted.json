@@ -1,0 +1,17 @@
+{
+  "spec_version": "1.9",
+  "producer": {
+    "name": "legacy-producer",
+    "version": "0.0.1",
+    "source": "application",
+    "public_key": "MCowBQYDK2VwAyEAuBVYUz1ps5Q/uSVdQYbaX2iwtzP2S4phTVoYNaT2DfI="
+  },
+  "issued_at": "2026-07-21T00:00:00Z",
+  "entries": [
+    {
+      "prev_hash": null,
+      "destination": "api.example.com"
+    }
+  ],
+  "signature": "JeU5yLr8SfeI69gPwA38IfnjfBCn4VhQpeHmSNe2GUaIDAvaVpJoiYw51gD3tqJhPmA4JhWLdUe+YqrBJgNnBg=="
+}

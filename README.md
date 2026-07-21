@@ -1,68 +1,60 @@
 # AVAR Conformance Suite
 
-[![License: Apache 2.0](https://img.shields.io/badge/code-Apache_2.0-blue.svg)](LICENSE)
-[![Vectors: CC BY 4.0](https://img.shields.io/badge/vectors-CC_BY_4.0-lightgrey.svg)](LICENSE-VECTORS)
-
-Test vectors and runner for verifying AVAR-compliant implementations.
-
-## Two Tiers
-
-- **`producer/`** — vectors an implementation must correctly *emit*
-- **`verifier/`** — vectors an implementation must correctly *accept or reject*
-
-## Usage
-
-```bash
-# Test a verifier binary
-avar-conformance verifier --binary ./my-verifier
-
-# Test a producer by feeding it scripted actions
-avar-conformance producer --producer-config ./my-producer.yaml
-```
-
-Exit code `0` = all tests passed. Non-zero = failure count.
-
-## Vector Format
-
-Each vector is a JSON file:
-
-```json
-{
-  "id": "rfc-0008/depth-transport-basic",
-  "description": "Transport-depth evidence with minimal claims block",
-  "spec_refs": ["RFC-0008 §3", "RFC-0008 §5"],
-  "input": { ... receipt ... },
-  "expected": {
-    "verdict": "accept",
-    "warnings": [],
-    "errors": []
-  }
-}
-```
-
-Rejection vectors set `expected.verdict` to `reject` and list required
-error codes.
-
-## Vendor-Neutral Rule
-
-Vectors MUST use only generic `source` values from RFC-0008 §4
-(`network-proxy`, `sdk-wrapper`, `os-agent`, `application`, `broker`).
-Vendor-specific source values are rejected by the vector linter.
-
-## "AVAR Compatible" Certification
-
-Passing the current-version verifier suite is the technical basis for the
-proposed **AVAR Compatible** certification mark. See
-[Aarmatix/avar-spec/GOVERNANCE.md](https://github.com/Aarmatix/avar-spec/blob/main/GOVERNANCE.md).
-
-## Contributing
-
-- Bug in a vector? Open an issue with the vector ID.
-- Missing coverage? Open a PR adding a vector; every vector MUST cite the
-  RFC section it exercises.
-- Spec ambiguity? Open an issue in `avar-spec`, not here.
+Test vectors and a harness for verifying that an AVAR implementation
+conforms to the [specification](https://github.com/Aarmatix/avar-spec).
 
 ## License
 
-- Code: Apache-2.0 (LICENSE)
-- Test vectors: CC BY 4.0 (LICENSE-VECTORS)
+Dual-licensed:
+- **Vector JSON** (under `vectors/`) is **CC BY 4.0** — the same license as
+  the spec text they exercise.
+- **Harness and generator code** (under `scripts/`) is **Apache-2.0**.
+
+## Layout
+
+```
+vectors/
+  rfc-0008/            # Evidence Model vectors
+    index.json         # manifest: vector name, file, expected outcome
+    *.json             # individual signed receipts
+scripts/
+  generate-vectors.mjs # regenerate vectors from the reference verifier
+  run.mjs              # run every vector against a target verifier
+```
+
+## Run against the reference verifier
+
+```bash
+# Clone the reference verifier alongside this repo:
+git clone https://github.com/Aarmatix/avar.git ../avar
+(cd ../avar && npm install && npx tsc)
+node scripts/run.mjs
+```
+
+## Run against your verifier
+
+Export a `verifyReceipt(receipt, opts)` function that follows the reference
+API, then:
+
+```bash
+node scripts/run.mjs --verifier ./path/to/my-verifier.js
+```
+
+Expected outcome fields per vector:
+
+| Field | Meaning |
+|---|---|
+| `valid` | boolean — must match `result.valid` (or throw with matching `code`) |
+| `code` | AVAR error code from RFC-0008 §8 / RFC-0009 §8, or `null` if `valid` |
+| `legacy` | (optional) `true` iff the receipt is pre-1.10 |
+
+## Regenerating vectors
+
+Vectors are regenerated deterministically (fixed `issued_at`, fresh
+Ed25519 keypair per run):
+
+```bash
+node scripts/generate-vectors.mjs
+```
+
+Commit both `vectors/**/*.json` and the updated `index.json` together.

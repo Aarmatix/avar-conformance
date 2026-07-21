@@ -1,0 +1,87 @@
+{
+  "spec": "RFC-0008",
+  "generated_at": "2026-07-21T00:00:00Z",
+  "vectors": [
+    {
+      "name": "valid-action-depth",
+      "file": "vectors/rfc-0008/valid-action-depth.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "invalid-signature",
+      "file": "vectors/rfc-0008/invalid-signature.json",
+      "expected": {
+        "valid": false,
+        "code": "E-SIG-INVALID"
+      }
+    },
+    {
+      "name": "missing-producer",
+      "file": "vectors/rfc-0008/missing-producer.json",
+      "expected": {
+        "valid": false,
+        "code": "E-PRODUCER-MISSING"
+      }
+    },
+    {
+      "name": "invalid-depth",
+      "file": "vectors/rfc-0008/invalid-depth.json",
+      "expected": {
+        "valid": false,
+        "code": "E-DEPTH-INVALID"
+      }
+    },
+    {
+      "name": "missing-claims",
+      "file": "vectors/rfc-0008/missing-claims.json",
+      "expected": {
+        "valid": false,
+        "code": "E-CLAIMS-MISSING"
+      }
+    },
+    {
+      "name": "claims-contradiction",
+      "file": "vectors/rfc-0008/claims-contradiction.json",
+      "expected": {
+        "valid": false,
+        "code": "E-CLAIMS-CONTRADICTION"
+      }
+    },
+    {
+      "name": "depth-coherence-violation",
+      "file": "vectors/rfc-0008/depth-coherence-violation.json",
+      "expected": {
+        "valid": false,
+        "code": "E-COHERENCE"
+      }
+    },
+    {
+      "name": "chain-broken",
+      "file": "vectors/rfc-0008/chain-broken.json",
+      "expected": {
+        "valid": false,
+        "code": "E-CHAIN-BROKEN"
+      }
+    },
+    {
+      "name": "time-out-of-range",
+      "file": "vectors/rfc-0008/time-out-of-range.json",
+      "expected": {
+        "valid": false,
+        "code": "E-TIME-OUT-OF-RANGE"
+      }
+    },
+    {
+      "name": "legacy-1.9-accepted",
+      "file": "vectors/rfc-0008/legacy-1.9-accepted.json",
+      "expected": {
+        "valid": true,
+        "code": null,
+        "legacy": true
+      }
+    }
+  ]
+}
