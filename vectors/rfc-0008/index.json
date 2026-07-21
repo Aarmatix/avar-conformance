@@ -3,8 +3,24 @@
   "generated_at": "2026-07-21T00:00:00Z",
   "vectors": [
     {
-      "name": "valid-action-depth",
-      "file": "vectors/rfc-0008/valid-action-depth.json",
+      "name": "valid-action-type",
+      "file": "vectors/rfc-0008/valid-action-type.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "valid-protocol-type",
+      "file": "vectors/rfc-0008/valid-protocol-type.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "valid-transport-type",
+      "file": "vectors/rfc-0008/valid-transport-type.json",
       "expected": {
         "valid": true,
         "code": null
@@ -27,11 +43,11 @@
       }
     },
     {
-      "name": "invalid-depth",
-      "file": "vectors/rfc-0008/invalid-depth.json",
+      "name": "missing-evidence-type",
+      "file": "vectors/rfc-0008/missing-evidence-type.json",
       "expected": {
         "valid": false,
-        "code": "E-DEPTH-INVALID"
+        "code": "E-EVIDENCE-TYPE-INVALID"
       }
     },
     {
@@ -51,8 +67,8 @@
       }
     },
     {
-      "name": "depth-coherence-violation",
-      "file": "vectors/rfc-0008/depth-coherence-violation.json",
+      "name": "evidence-type-coherence-violation",
+      "file": "vectors/rfc-0008/evidence-type-coherence-violation.json",
       "expected": {
         "valid": false,
         "code": "E-COHERENCE"
@@ -72,6 +88,38 @@
       "expected": {
         "valid": false,
         "code": "E-TIME-OUT-OF-RANGE"
+      }
+    },
+    {
+      "name": "legacy-depth-field-accepted",
+      "file": "vectors/rfc-0008/legacy-depth-field-accepted.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "legacy-intent-accepted",
+      "file": "vectors/rfc-0008/legacy-intent-accepted.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "unknown-evidence-type-accepted",
+      "file": "vectors/rfc-0008/unknown-evidence-type-accepted.json",
+      "expected": {
+        "valid": true,
+        "code": null
+      }
+    },
+    {
+      "name": "unknown-extension-attr-accepted",
+      "file": "vectors/rfc-0008/unknown-extension-attr-accepted.json",
+      "expected": {
+        "valid": true,
+        "code": null
       }
     },
     {
