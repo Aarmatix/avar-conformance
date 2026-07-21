@@ -4,7 +4,7 @@
     "name": "legacy-producer",
     "version": "0.0.1",
     "source": "application",
-    "public_key": "MCowBQYDK2VwAyEAuBVYUz1ps5Q/uSVdQYbaX2iwtzP2S4phTVoYNaT2DfI="
+    "public_key": "MCowBQYDK2VwAyEAPQKSgk9odE8RrN2im45s7zOL8xXNRTOn8s1o5WijZLA="
   },
   "issued_at": "2026-07-21T00:00:00Z",
   "entries": [
@@ -13,5 +13,5 @@
       "destination": "api.example.com"
     }
   ],
-  "signature": "JeU5yLr8SfeI69gPwA38IfnjfBCn4VhQpeHmSNe2GUaIDAvaVpJoiYw51gD3tqJhPmA4JhWLdUe+YqrBJgNnBg=="
+  "signature": "3zxVT+ytzVTkf2LZ2/CSSc1vcv3pYCF8YLaiqzI+AixxCTQebNpwXoyYTO9cP03YqM9cLOcoNl+G5cTeQisxAA=="
 }
