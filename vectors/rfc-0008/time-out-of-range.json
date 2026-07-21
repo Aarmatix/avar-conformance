@@ -4,14 +4,14 @@
     "name": "conformance-producer",
     "version": "1.0.0",
     "source": "sdk-wrapper",
-    "public_key": "MCowBQYDK2VwAyEAuBVYUz1ps5Q/uSVdQYbaX2iwtzP2S4phTVoYNaT2DfI="
+    "public_key": "MCowBQYDK2VwAyEAPQKSgk9odE8RrN2im45s7zOL8xXNRTOn8s1o5WijZLA="
   },
   "issued_at": "1970-01-01T00:00:00Z",
   "session_id": "01900000-0000-7000-8000-000000000001",
   "entries": [
     {
       "prev_hash": null,
-      "depth": "action",
+      "evidence_type": "action",
       "source": "sdk-wrapper",
       "destination": "api.example.com",
       "method": "POST",
@@ -35,5 +35,5 @@
       }
     }
   ],
-  "signature": "W4UCrPFFrL1JCrjJGDnf29W48XjlA/xdzAejkW6jaZ6CL/A74MmjTYRpRUWpRPA1Ko0nsDCWbw4jVKpohXpnBA=="
+  "signature": "MsH8ZkX4foh4EOuDuW/eq8K2awYUmm0GrJt5ae1w93ctxc9DBa9kbuu6Vp5OJe+u9s3pHqn0MKIMWR3APEdUCg=="
 }
