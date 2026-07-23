@@ -25,10 +25,17 @@ scripts/
 ## Run against the reference verifier
 
 ```bash
-# Clone the reference verifier alongside this repo:
+# Clone the reference-implementation monorepo alongside this repo:
 git clone https://github.com/Aarmatix/avar.git ../avar
-(cd ../avar && npm install && npx tsc)
+(cd ../avar && npm install && npm run -w @avar-standard/core build)
 node scripts/run.mjs
+```
+
+Or run against the published npm package with no clone:
+
+```bash
+npm install --no-save @avar-standard/core
+node scripts/run.mjs --verifier ./node_modules/@avar-standard/core/dist/index.js
 ```
 
 ## Run against your verifier

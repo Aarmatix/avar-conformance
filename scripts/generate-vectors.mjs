@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Generates the canonical RFC-0008 test vectors used by the AVAR
-// conformance suite. Produces signed "valid" vectors plus one rejection
-// vector per RFC-0008/0009 error code, plus interop vectors covering the
-// amended §3 rules (legacy `depth`, legacy `intent`, unknown types,
-// unknown extension attributes).
+// conformance suite. Produces signed "valid" vectors, one rejection
+// vector per RFC-0008 / RFC-0009 error code, and interop vectors
+// exercising the RFC-0008 §3 interop rules (deprecated-alias acceptance,
+// unknown evidence_type acceptance, unknown extension attributes,
+// pre-1.10 receipt acceptance).
 //
 // Output: vectors/rfc-0008/{name}.json + index.json
 //
@@ -16,8 +17,8 @@ import { fileURLToPath } from "node:url";
 import { generateKeyPairSync, sign as edSign } from "node:crypto";
 // Minimal inline RFC-8785 JCS canonicalizer so the generator has no
 // runtime dependency on the reference verifier's build output. Matches
-// the algorithm in Aarmatix/avar src/canonicalize.ts (both derived from
-// the public RFC-8785 text).
+// the algorithm in Aarmatix/avar packages/core/src/canonicalize.ts
+// (both derived from the public RFC-8785 text).
 function canonicalize(value) {
   if (value === null) return "null";
   if (typeof value === "boolean") return value ? "true" : "false";
